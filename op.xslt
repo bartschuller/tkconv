@@ -20,7 +20,7 @@
         </title>
         <link
           rel="stylesheet"
-          href="../pico.min.css"
+          href="../html/pico.min.css"
         />
         <style>
         </style>
@@ -131,26 +131,8 @@
     </span>
   </xsl:template>
 
-  <xsl:template match="amendement">
-    <div class="amendement">
-      <xsl:apply-templates />
-    </div>
-  </xsl:template>
-
-  <xsl:template match="algemeen">
-    <div class="algemeen">
-      <xsl:apply-templates />
-    </div>
-  </xsl:template>
-
-  <xsl:template match="voorstel-wet">
-    <div class="voorstel-wet">
-      <xsl:apply-templates />
-    </div>
-  </xsl:template>
-
-  <xsl:template match="amendement-lid">
-    <div class="amendement-lid">
+  <xsl:template match="amendement|amendement-lid|algemeen|voorstel-wet|aanhef">
+    <div class="{local-name()}">
       <xsl:apply-templates />
     </div>
   </xsl:template>
@@ -163,14 +145,20 @@
     </p>
   </xsl:template>
 
-  <xsl:template match="wat">
-    <p class="wat">
+  <xsl:template match="wat|wij|considerans.al">
+    <p class="{local-name()}">
       <xsl:apply-templates />
     </p>
   </xsl:template>
 
   <xsl:template match="al">
     <p>
+      <xsl:apply-templates />
+    </p>
+  </xsl:template>
+
+  <xsl:template match="afkondiging/al">
+    <p class="afkondiging">
       <xsl:apply-templates />
     </p>
   </xsl:template>
@@ -187,7 +175,7 @@
     </a>
   </xsl:template>
 
-  <xsl:template match="divisie|kop|tekst-sluiting">
+  <xsl:template match="divisie|kop|tekst-sluiting|considerans|afkondiging">
     <xsl:apply-templates />
   </xsl:template>
 
