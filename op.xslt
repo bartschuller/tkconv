@@ -53,7 +53,7 @@
     </span>
   </xsl:template>
 
-  <xsl:template match="dossiernr|dossier/titel">
+  <xsl:template match="dossiernr|dossier/titel|begrotingshoofdstuk">
     <xsl:apply-templates />
   </xsl:template>
 
@@ -81,7 +81,7 @@
     <xsl:text> </xsl:text>
   </xsl:template>
 
-  <xsl:template match="ondernummer|stuk/titel">
+  <xsl:template match="ondernummer|herdruk|stuk/titel|vrije-tekst|tekst">
     <xsl:apply-templates />
   </xsl:template>
 
@@ -137,6 +137,18 @@
     </div>
   </xsl:template>
 
+  <xsl:template match="algemeen">
+    <div class="algemeen">
+      <xsl:apply-templates />
+    </div>
+  </xsl:template>
+
+  <xsl:template match="voorstel-wet">
+    <div class="voorstel-wet">
+      <xsl:apply-templates />
+    </div>
+  </xsl:template>
+
   <xsl:template match="amendement-lid">
     <div class="amendement-lid">
       <xsl:apply-templates />
@@ -161,6 +173,18 @@
     <p>
       <xsl:apply-templates />
     </p>
+  </xsl:template>
+
+  <xsl:template match="nadruk[@type='vet']">
+    <strong class="vet">
+      <xsl:apply-templates />
+    </strong>
+  </xsl:template>
+
+  <xsl:template match="extref[@doc]">
+    <a href="https://zoek.officielebekendmakingen.nl/{@doc}.html">
+      <xsl:apply-templates />
+    </a>
   </xsl:template>
 
   <xsl:template match="divisie|kop|tekst-sluiting">
@@ -224,13 +248,13 @@
   </xsl:template>
 
   <!-- Helps the author of this xslt to see what still needs to be done -->
-  <!-- <xsl:template match="*">
+  <xsl:template match="*">
     <xsl:message terminate="no">
       <xsl:text>Unhandled element </xsl:text>
       <xsl:value-of select="local-name()" />
     </xsl:message>
     <xsl:apply-templates />
-  </xsl:template> -->
+  </xsl:template>
 
   <xsl:template match="*" mode="title"> TODO </xsl:template>
 </xsl:stylesheet>
