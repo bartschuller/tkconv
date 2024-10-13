@@ -20,7 +20,11 @@
         </title>
         <link
           rel="stylesheet"
-          href="../html/pico.min.css"
+          href="html/pico.min.css"
+        />
+        <link
+          rel="stylesheet"
+          href="html/op.css"
         />
         <style>
         </style>
@@ -45,12 +49,6 @@
     <h1 class="dossiertitel">
       <xsl:apply-templates select="*" />
     </h1>
-  </xsl:template>
-
-  <xsl:template match="dossiernummer">
-    <span class="dossiernummer">
-      <xsl:apply-templates />
-    </span>
   </xsl:template>
 
   <xsl:template match="dossiernr|dossier/titel|begrotingshoofdstuk">
@@ -81,7 +79,7 @@
     <xsl:text> </xsl:text>
   </xsl:template>
 
-  <xsl:template match="ondernummer|herdruk|stuk/titel|vrije-tekst|tekst">
+  <xsl:template match="ondernummer|herdruk|stuk/titel|vrije-tekst|tekst|wijzig-artikel">
     <xsl:apply-templates />
   </xsl:template>
 
@@ -125,16 +123,34 @@
     </p>
   </xsl:template>
 
-  <xsl:template match="datum">
-    <span class="datum">
-      <xsl:apply-templates />
-    </span>
+  <xsl:template
+    match="amendement|amendement-lid|algemeen|voorstel-wet|aanhef|wettekst|
+    wijzig-lid|wijziging|artikel|voorstel-sluiting|slotformulering">
+    <div class="{local-name()}">
+      <xsl:apply-templates select="*" />
+    </div>
   </xsl:template>
 
-  <xsl:template match="amendement|amendement-lid|algemeen|voorstel-wet|aanhef">
-    <div class="{local-name()}">
-      <xsl:apply-templates />
+  <xsl:template
+    match="artikeltekst">
+    <div class="artikeltekst">
+      <xsl:choose>
+        <xsl:when test="lid">
+          <ul class="artikel_leden whitespace-small">
+            <xsl:apply-templates select="*" />
+          </ul>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:apply-templates select="*" />
+        </xsl:otherwise>
+      </xsl:choose>
     </div>
+  </xsl:template>
+
+  <xsl:template match="lid">
+    <li>
+      <xsl:apply-templates select="*" />
+    </li>
   </xsl:template>
 
   <xsl:template match="lidnr">
@@ -145,8 +161,56 @@
     </p>
   </xsl:template>
 
+  <xsl:template match="definitielijst[@plaatsing='inline']">
+    <dl class="inline">
+      <xsl:apply-templates select="*" />
+    </dl>
+  </xsl:template>
+
+  <xsl:template match="definitie-item">
+    <dl>
+      <xsl:apply-templates select="*" />
+    </dl>
+  </xsl:template>
+
+  <xsl:template match="definitie-item/li.nr" />
+
+  <xsl:template match="term[preceding-sibling::li.nr]">
+    <dt>
+      <span class="ol">
+        <xsl:apply-templates select="preceding-sibling::li.nr/node()" />
+      </span>
+      <xsl:text> </xsl:text>
+      <xsl:apply-templates />
+    </dt>
+  </xsl:template>
+
+  <xsl:template match="term">
+    <dt>
+      <xsl:apply-templates />
+    </dt>
+  </xsl:template>
+
+  <xsl:template match="definitie">
+    <dd>
+      <xsl:apply-templates select="*" />
+    </dd>
+  </xsl:template>
+
   <xsl:template match="wat|wij|considerans.al">
     <p class="{local-name()}">
+      <xsl:apply-templates />
+    </p>
+  </xsl:template>
+
+  <xsl:template match="wijziging/nr" />
+
+  <xsl:template match="wijziging/wat[preceding-sibling::nr]">
+    <p class="wat labeled">
+      <span class="nr">
+        <xsl:apply-templates select="preceding-sibling::nr/node()" />
+      </span>
+      <xsl:text> </xsl:text>
       <xsl:apply-templates />
     </p>
   </xsl:template>
@@ -170,7 +234,13 @@
   </xsl:template>
 
   <xsl:template match="extref[@doc]">
-    <a href="https://zoek.officielebekendmakingen.nl/{@doc}.html">
+    <a href="/tkconv/op/{@doc}">
+      <xsl:apply-templates />
+    </a>
+  </xsl:template>
+
+  <xsl:template match="dossierref">
+    <a href="/tkconv/ksd.html?ksd={@dossier}">
       <xsl:apply-templates />
     </a>
   </xsl:template>
@@ -179,10 +249,29 @@
     <xsl:apply-templates />
   </xsl:template>
 
-  <xsl:template match="divisie/kop/titel">
+  <xsl:template match="divisie/kop">
     <h2 class="divisiekop1">
-      <xsl:apply-templates />
+      <xsl:apply-templates select="*" />
     </h2>
+  </xsl:template>
+
+  <xsl:template match="wijzig-artikel/kop">
+    <h2 class="wijzig-artikel_kop">
+      <xsl:apply-templates select="*" />
+    </h2>
+  </xsl:template>
+
+  <xsl:template match="artikel/kop">
+    <h3 class="artikel_kop no-toc">
+      <xsl:apply-templates select="*" />
+    </h3>
+  </xsl:template>
+
+  <xsl:template match="kop/*">
+    <xsl:apply-templates />
+    <xsl:if test="position() != last()">
+      <xsl:text> </xsl:text>
+    </xsl:if>
   </xsl:template>
 
   <xsl:template match="al-groep">
@@ -223,16 +312,70 @@
     </p>
   </xsl:template>
 
-  <xsl:template match="naam">
-    <span class="naam">
+  <xsl:template match="naam|achternaam|functie|dossiernummer|datum">
+    <span class="{local-name()}">
       <xsl:apply-templates />
     </span>
   </xsl:template>
 
-  <xsl:template match="achternaam">
-    <span class="achternaam">
+  <xsl:template match="table">
+    <table>
       <xsl:apply-templates />
-    </span>
+    </table>
+  </xsl:template>
+
+  <xsl:template match="tgroup">
+    <colgroup>
+      <xsl:apply-templates select="colspec" />
+    </colgroup>
+    <xsl:apply-templates
+      select="thead|tbody" />
+  </xsl:template>
+
+  <xsl:template match="colspec">
+    <col />
+  </xsl:template>
+
+  <xsl:template match="thead">
+    <thead>
+      <xsl:apply-templates />
+    </thead>
+  </xsl:template>
+
+  <xsl:template match="tbody">
+    <tbody>
+      <xsl:apply-templates />
+    </tbody>
+  </xsl:template>
+
+  <xsl:template match="row">
+    <tr>
+      <xsl:apply-templates />
+    </tr>
+  </xsl:template>
+
+  <xsl:template match="entry">
+    <td>
+      <xsl:apply-templates />
+    </td>
+  </xsl:template>
+
+  <xsl:template match="sup">
+    <sup>
+      <xsl:apply-templates />
+    </sup>
+  </xsl:template>
+
+  <xsl:template match="inf">
+    <sub>
+      <xsl:apply-templates />
+    </sub>
+  </xsl:template>
+
+  <xsl:template match="voorstel-sluiting/label">
+    <p class="gegeven">
+      <xsl:apply-templates />
+    </p>
   </xsl:template>
 
   <!-- Helps the author of this xslt to see what still needs to be done -->
